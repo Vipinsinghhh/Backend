@@ -1,0 +1,24 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "All backend learnings",
+  "keywords": [
+    "javascript",
+    "backend"
+  ],
+  "homepage": "https://github.com/Vipinsinghhh/Backend#readme",
+  "bugs": {
+    "url": "https://github.com/Vipinsinghhh/Backend/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Vipinsinghhh/Backend.git"
+  },
+  "license": "ISC",
+  "author": "Vipin Singh",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
