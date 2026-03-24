@@ -63,7 +63,7 @@ const userSchema = new Schema(
 )
 
 // Before saving, hash the password only if it was newly added or changed.
-userSchema.pre("save", async function (next){
+userSchema.pre("save", async function (next){     // yha arrow function isliye use nhi kiya kyuki arrow func me this nhi hota and without this we cannnot access object elements
     if(!this.isModified("password")) return next();
 
     this.password = bcrypt.hash(this.password, 10)
