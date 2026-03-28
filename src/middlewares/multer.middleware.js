@@ -15,4 +15,11 @@ const storage = multer.diskStorage({
 // Export a ready-to-use multer instance that uses the disk storage config above.
 const upload = multer({storage,})
 
+// we can also give more data in multer like, thats why multer ke andr object me data pass krna hota he and keys name bhi fixed hoti he jese storage, limit etc.
+// const upload = multer({
+//   storage: storage,
+//   limits: { fileSize: 1024 * 1024 },
+//   fileFilter: (req, file, cb) => {}
+// })
+
 export default upload
