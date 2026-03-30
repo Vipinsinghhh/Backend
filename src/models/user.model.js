@@ -63,11 +63,23 @@ const userSchema = new Schema(
 )
 
 // Before saving, hash the password only if it was newly added or changed.
-userSchema.pre("save", async function (next){     // yha arrow function isliye use nhi kiya kyuki arrow func me this nhi hota and without this we cannnot access object elements
-    if(!this.isModified("password")) return next();
+
+//---------It gives error---------------
+// When using async/await in Mongoose middleware, do not use next(); async functions return a Promise, and mixing both patterns can cause errors like "next is not a function".
+
+// userSchema.pre("save", async function (next){     // yha arrow function isliye use nhi kiya kyuki arrow func me this nhi hota and without this we cannnot access object elements
+//     if(!this.isModified("password")) return next();
+
+//     this.password = await bcrypt.hash(this.password, 10)
+//     next()
+// })
+//---------------------------------------------
+
+//------Right way--------
+userSchema.pre("save", async function (){     // yha arrow function isliye use nhi kiya kyuki arrow func me this nhi hota and without this we cannnot access object elements
+    if(!this.isModified("password")) return;
 
     this.password = await bcrypt.hash(this.password, 10)
-    next()
 })
 
 // Compares a plain password with the stored hashed password.
