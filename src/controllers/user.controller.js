@@ -3,6 +3,8 @@ import ApiError from "../utils/ApiError.js"
 import { User } from "../models/user.model.js"
 import uploadOnCloudinary from "../utils/cloudinary.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
+import jwt from "jsonwebtoken"
+import mongoose from "mongoose" 
 
 const generateAccessAndRefereshTokens = async(userId) => {
     try {
@@ -110,11 +112,18 @@ const loginUser = asyncHandler(async (req, res) => {
     //send cookie
 
     const {email, username, password} = req.body
+    console.log(email);
 
     // Require login identity before checking the database.
-    if(!username || !email){
+    if(!username && !email){
         throw new ApiError(400, "username or email is required")
     }
+
+    // Here is an alternative of above code based on logic discussed in video:
+    // if (!(username || email)) {
+    //     throw new ApiError(400, "username or email is required")
+        
+    // }
 
     // Find the account using either the provided username or email.
     const user = await User.findOne({
