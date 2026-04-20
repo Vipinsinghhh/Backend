@@ -197,33 +197,43 @@ const logoutUser = asyncHandler(async(req, res) => {
     .json(new ApiResponse(200,{},"User logged Out"))
 })
 
+// Verify the refresh token and issue a fresh access token for the active user session.
 const refreshAccessToken = asyncHandler(async (req, res) => {
+    // Read the refresh token from cookies first, and fall back to request body if needed.
     const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
 
+    // Stop immediately if the client did not send any refresh token.
     if (!incomingRefreshToken) {
         throw new ApiError(401, "unauthorized request")
     }
 
     try {
+        // Decode and verify the refresh token using the refresh token secret.
         const decodedToken = jwt.verify(incomingRefreshToken, process.env.REFRESH_TOKEN_SECRET)
 
+        // Find the user whose id was stored inside the verified token payload.
         const user = await User.findById(decodedToken?._id)
 
+        // If no matching user exists, the token should not be trusted.
         if (!user) {
             throw new ApiError(401, "Invalid refresh token")
         }
 
+        // Compare the incoming token with the one saved in DB to block reused or old tokens.
         if(incomingRefreshToken !== user?.refreshToken){
             throw new ApiError(401, "Refresh token is expired or used")
         }
 
+        // Define secure cookie settings for the new tokens that will be sent back.
         const options = {
             httpOnly: true,
             secure: true
         }
 
+        // Generate a new access token and refresh token pair for the user.
         const {accessToken, newRefreshToken} = await generateAccessAndRefereshTokens(user._id)
 
+        // Return the fresh tokens in both cookies and JSON response.
         return res
         .status(200)
         .cookie("accessToken", accessToken, options)
@@ -236,6 +246,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
             )
         )
     } catch (error) {
+        // Handle invalid, expired, or tampered refresh tokens with a consistent auth error.
         throw new ApiError(401, error?.message || "Invalid refresh token")
     }
 
