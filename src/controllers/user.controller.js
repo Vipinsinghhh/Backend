@@ -1,7 +1,7 @@
 import { asyncHandler } from "../utils/asyncHandler.js"
 import ApiError from "../utils/ApiError.js"
 import { User } from "../models/user.model.js"
-import uploadOnCloudinary from "../utils/cloudinary.js"
+import uploadOnCloudinary, { deleteFromCloudinary } from "../utils/cloudinary.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import jwt from "jsonwebtoken"
 import mongoose from "mongoose" 
@@ -285,7 +285,7 @@ const updateAccountDetails = asyncHandler(async(req, res) => {
         throw new ApiError(400, "All fields are required")
     }
 
-    const user = User.findByIdAndUpdate(
+    const user = await User.findByIdAndUpdate(
         req.user?._id,
         {
             $set: {
@@ -309,6 +309,8 @@ const updateUserAvatar = asyncHandler(async(req, res)=> {
     if(!avatarLocalPath){
         throw new ApiError(400, "Avatar file is missing")
     }
+
+    await deleteFromCloudinary(req.user?.avatar)
 
     const avatar = await uploadOnCloudinary(avatarLocalPath)
 
@@ -339,6 +341,11 @@ const updateUserCoverImage = asyncHandler(async(req, res) => {
     if (!coverImageLocalPath) {
         throw new ApiError(400, "Cover image file is missing")
     }
+
+    // const existingUser = await User.findById(req.user?._id).select("coverImage")
+    // await deleteFromCloudinary(existingUser?.coverImage)
+
+    await deleteFromCloudinary(req.user?.coverImage)
 
     const coverImage = await uploadOnCloudinary(coverImageLocalPath)
 
