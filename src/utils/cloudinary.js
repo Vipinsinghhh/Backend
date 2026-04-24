@@ -31,4 +31,15 @@ const uploadOnCloudinary = async (localFilePath) => {
     }
 }
 
+export const deleteFromCloudinary = async (fileUrl) => {
+    if (!fileUrl) return null
+
+    const publicIdWithExtension = fileUrl.split("/upload/").pop()?.replace(/^v\d+\//, "")
+    const publicId = publicIdWithExtension?.replace(/\.[^/.]+$/, "")
+
+    if (!publicId) return null
+
+    return await cloudinary.uploader.destroy(decodeURIComponent(publicId))
+}
+
 export default uploadOnCloudinary
