@@ -291,12 +291,15 @@ const getCurrentUser = asyncHandler(async(req,res)=>{
 })
 
 const updateAccountDetails = asyncHandler(async(req, res) => {
+    // Get the updated account fields from the request body.
     const {fullName, email} = req.body
 
+    // Both fields are required because this API updates the basic account profile together.
     if(!fullName || !email){
         throw new ApiError(400, "All fields are required")
     }
 
+    // Update the logged-in user's account details and return the latest document.
     const user = await User.findByIdAndUpdate(
         req.user?._id,
         {
@@ -308,6 +311,7 @@ const updateAccountDetails = asyncHandler(async(req, res) => {
         {new: true}
     ).select("-password")
 
+    // Return the updated user without the password field.
     return res
     .status(200)
     .json( new ApiResponse(200, user, "Account details updated successfully"))
