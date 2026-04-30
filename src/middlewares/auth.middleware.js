@@ -9,7 +9,7 @@ export const verifyJWT = asyncHandler(async(req, res, next) => {
         // Read the access token either from cookies or from the Authorization header.
         const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "")
 
-        console.log(token);
+        //console.log(token);
 
         // Stop the request early if no token was provided.
         if (!token) {
