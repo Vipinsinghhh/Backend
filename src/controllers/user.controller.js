@@ -254,19 +254,27 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
 
 const changeCurrentPassword = asyncHandler(async (req, res) => {
+    // Get the current password and the replacement password from the request body.
     const {oldPassword, newPassword} = req.body
 
+    // Fetch the logged-in user so we can verify the password against the saved hash.
     const user = await User.findById(req.user?._id)
+
+    // Compare the provided old password with the user's existing hashed password.
     const isPasswordCorrect = await user.isPasswordCorrect(oldPassword)
 
+    // Stop the request if the old password is wrong.
     if(!isPasswordCorrect){
         throw new ApiError(400, "Invalid old password")
     }
 
+    // Assigning password triggers the pre-save hook in user.model.js to hash it.
     user.password = newPassword
 
+    // Save only the password change. Other validations are skipped because this API updates one field.
     await user.save({validateBeforeSave: false})
 
+    // Send a success response without returning any sensitive user data.
     return res
     .status(200)
     .json(new ApiResponse(200, {}, "Password changed successfully"))
